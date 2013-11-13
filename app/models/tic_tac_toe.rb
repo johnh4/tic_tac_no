@@ -8,19 +8,42 @@ class TicTacToe < ActiveRecord::Base
 		board[index] = "2"
 	end
 
-	def try_moves
-		trial_board = board
-		empty = empty_slots(board)
-		empty.each do |i|
-			trial_board[i] = "2"
-			#call possible_boards(trial_board)
-			puts trial_board
-			trial_board[i] = "0"
+	def copy_board(to_copy)
+		copy = ""
+		for i in 0...to_copy.length
+			copy << to_copy[i]
 		end
+		return copy
 	end
 
-	#for each of my possible moves
-	#calculate all possible boards
+	def try_moves
+		losses = 0
+		@trial_board = board.dup #copy_board(board)
+		puts "@trial_board before empty guess, should equal board: #{@trial_board}"
+		puts "board before insert in empty.each: #{board}"
+		empty = empty_slots(board)
+
+		best_move = nil
+		losses_low = 100
+		empty.each do |i|
+			puts "board: #{board}"
+			@trial_board[i] = "2"
+			puts "@trial_board before calcs: #{@trial_board}"
+			#puts "board after insert in empty.each: #{board}"
+			comp_boards = possible_boards(@trial_board)
+			losses = evaluate_boards(comp_boards)
+			if losses < losses_low
+				losses_low = losses
+				best_move = i
+				puts "new best_move: index #{best_move}"
+			end
+			puts "@trial_board after calcs: #{@trial_board}"
+			@trial_board[i] = "0"
+			#losses = 0
+		end
+		puts "BEST_MOVE: index #{best_move} with #{losses_low} losses."
+		return best_move
+	end
 
 	def empty_slots(board)
 		empty_locs = []
@@ -58,7 +81,9 @@ class TicTacToe < ActiveRecord::Base
 
 		#result of all_boards
 		all_boards = all_boards(empty_str, num_moves_p1)
-		uniq_boards(all_boards)
+		uniq_boards = uniq_boards(all_boards)
+		assembled_boards = assemble_boards(uniq_boards, empty)
+		return assembled_boards
 	end
 
 	def all_boards(empty_str, moves_p1)
@@ -84,10 +109,13 @@ class TicTacToe < ActiveRecord::Base
 		#player 2's first turn
 		moves_p2_left = moves_p2 - 1
 		for i in 0...empty_str.length
-			start_str[i] = "2"
-			next_turn(empty_str, start_str, all_boards, moves_p2_left)
+			start_str[i] = "2" if moves_p2 > 0
+			if moves_p2_left > 0
+				next_turn(empty_str, start_str, all_boards, moves_p2_left)
+			else
+				all_boards << start_str.dup
+			end
 			start_str[i] = "1"
-
 		end
 		puts "all_boards: #{all_boards}"
 		return all_boards
@@ -96,7 +124,7 @@ class TicTacToe < ActiveRecord::Base
 	#player 2's subsequent turns
 	def next_turn(empty_str, second_str, all_boards, moves_p2_left)
 		moves_p2_left -= 1
-		puts "moves_p2_left: #{moves_p2_left}"
+		#puts "moves_p2_left: #{moves_p2_left}"
 		for i in 0...empty_str.length
 			if second_str[i] != "2"
 				second_str[i] = "2"
@@ -110,18 +138,80 @@ class TicTacToe < ActiveRecord::Base
 		end
 	end
 
-	def third_turn(third_str)
-
-	end
-
 	def uniq_boards(all_boards)
 		uniq_boards = all_boards.uniq
 		puts "uniq_boards: #{uniq_boards}"
 		return uniq_boards
 	end
 
+	def assemble_boards(uniq_boards, empty_arr)
+		assembled_boards = []
+		uniq_boards.each do |uniq_b|
+			assemble_one = @trial_board.dup #copy_board(@trial_board)#@trial_board.dup #board.dup
+			#puts "assemble_one: #{assemble_one}"
+			for i in 0...board.length
+				if @trial_board[i] == "0"
+					#puts "assemble_one[i]: #{assemble_one[i]}"
+					#puts "uniq_b[0]: #{uniq_b[0]}"
+					assemble_one[i] = uniq_b[0]
+					uniq_b = uniq_b[1..-1]
+				end
+			end
+			assembled_boards << assemble_one
+		end
+		puts "assembled_boards: #{assembled_boards.uniq}"
+		return assembled_boards
+	end
+
+	def evaluate_boards(complete_boards)
+		loss_count = 0
+		if player_first
+			player = "1"
+		else
+			player = "2"
+		end
+		
+		complete_boards.each do |complete_board|
+			if (board_has_losing_row(complete_board, player) ||
+				board_has_losing_col(complete_board, player) ||
+				board_has_losing_diag(complete_board, player))
+				loss_count += 1
+			end
+		end
+
+		puts "loss_count: #{loss_count}"
+		return loss_count
+	end
+
+	def board_has_losing_row(complete_board, player)
+		has_losing_row = false
+		if  ([player,complete_board[0],complete_board[1],complete_board[2]].uniq.length == 1) ||
+		    ([player,complete_board[3],complete_board[4],complete_board[5]].uniq.length == 1) ||
+		    ([player,complete_board[6],complete_board[7],complete_board[8]].uniq.length == 1)
+			has_losing_row = true
+		end
+	end
+
+	def board_has_losing_col(complete_board, player)
+		has_losing_col = false
+		if 	([player,complete_board[0],complete_board[3],complete_board[6]].uniq.length == 1) ||
+			([player,complete_board[1],complete_board[4],complete_board[7]].uniq.length == 1) ||
+			([player,complete_board[2],complete_board[5],complete_board[8]].uniq.length == 1)
+			has_losing_col = true
+		end
+	end
+
+	def board_has_losing_diag(complete_board, player)
+		has_losing_diag = false
+		if ([player,complete_board[0],complete_board[4],complete_board[8]].uniq.length == 1) ||
+			([player,complete_board[2],complete_board[4],complete_board[6]].uniq.length == 1)
+			has_losing_diag = true
+		end
+	end
+
+
 	def reset_start_str(empty_str)
-		start_str = "" 
+		start_str = ""
 		empty_str.length.times { start_str << "1" }
 		return start_str
 	end
