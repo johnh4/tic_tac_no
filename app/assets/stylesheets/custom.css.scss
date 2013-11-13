@@ -1,0 +1,30 @@
+$light-green: #00FF95;
+$light-red: #FF5773;
+$light-blue: #0095FF;
+
+/****** BOARD *******/
+#board {
+	height: 900px;
+	width: 900px;
+	background: white;
+}
+
+.grid-space {
+	border: 1px solid black;
+	background: $light-blue;
+	height: 100px;
+	width: 100px;
+	float: left;
+	&:nth-child(3n+1){
+		clear: left;
+	}
+}
+
+.player-move {
+	background: $light-green;
+}
+
+.comp-move {
+	//background: red;
+	background: $light-red;
+}
