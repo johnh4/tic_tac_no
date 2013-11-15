@@ -1,5 +1,224 @@
 class TicTacToe < ActiveRecord::Base
 
+	def start
+		if player_first
+			@player = "1"
+			@comp = "2"
+		else
+			@comp = "1"
+			@player = "2"
+		end
+		if player_first
+			game = { current_turn: 1, 1 => { player: 1, move: 10, banned: [], board: board },
+					 won: false }
+			puts "game with player_first: #{game}"
+		else
+			game = { current_turn: 1, 1 => { player: 2, move: 10, banned: [], board: board },
+					 won: false }
+			puts "game with player_first false: #{game}"
+		end
+
+		take_turn(game)
+	end
+
+	def take_turn(game)
+		#pick a move (immediate winners first)
+		move = pick_move(game)
+		puts "move: #{move}"
+
+		if move == nil
+			puts "no move was found. move: #{move}"
+
+			#if no possible move(get_eligible_moves returns no moves) then call correct_prev_turn
+		else
+			#if we win or tie, return this move
+			if game[:won]
+				puts "game won, returning winning move at index #{move}"
+				return move
+			end
+
+			new_board = game[game[:current_turn]][:board].dup
+			#increment turn
+			puts "current turn increased to #{game[:current_turn] + 1} from #{game[:current_turn]}"
+			game[:current_turn] += 1
+
+			#add move to hash
+			new_board[move] = @comp
+			game[game[:current_turn]] = { player: @comp, move: move, banned: [], 
+										  board: board = new_board }
+			puts "game hash updated: #{game}"
+
+			#if picked a move, run gen_player_moves
+			gen_player_moves(game)
+		end
+
+		return move
+	end
+
+	def gen_player_moves(game)
+		#check to see if any move wins game for player
+		moves = empty_slots(current_board(game))
+		puts "valid player moves: #{moves}"
+		winner_arr = immediate_winner(game, moves, @player)
+		if winner_arr[0]
+			puts "player has an immediate winner at index #{winner_arr[1]}"
+
+			new_board = game[game[:current_turn]][:board].dup
+			game[:current_turn] += 1
+
+			new_board[winner_arr[1]] = @player
+			game[game[:current_turn]] = { player: @player, move: winner_arr[1], banned: [], 
+										  board: board = new_board }
+			puts "game hash updated: #{game}"
+
+			#if any move wins game, call correct_prev_turn
+			correct_prev_turn(game)
+		else
+			#if no instant winner, for each possible player move, run take_turn w/ that as plyr turn
+			#for loop runs thru moves, calls take_turn within loop with that move (and inc turn)
+
+		end
+
+	end
+
+	#called when plyr wins or no eligible move
+	def correct_prev_turn(game)
+		#goes to prev comp turn, adds that move to banned list and undoes it
+		puts "rolling back to the previous turn"
+		puts "game pre-rollback: #{game}"
+		move = game[game[:current_turn]-1][:move]
+		game[game[:current_turn]-1][:banned] << move
+		game[game[:current_turn]-1][:board][move] = "0"
+		#decrement current turn
+		game[:current_turn] -= 1
+		puts "game post-rollback #{game}"
+		#call take_turn
+		
+	end
+
+	def pick_move(game)
+		moves = get_eligible_moves(game)
+		move = ""
+		puts "get_eligible_moves result: #{moves}"
+		puts "game[1]: #{game[1]}"
+		puts "game[:current_turn]: #{game[:current_turn]}"
+		puts "game[:board]: #{game[1][:board]}"
+
+		#check if immediate winner in moves
+		winner_arr = immediate_winner(game, moves, @comp)
+		if winner_arr[0]
+			puts "immediate winner found, at index #{winner_arr[1]}"
+			move = winner_arr[1]
+			game[:won] = true
+		else
+			move = moves[0]
+			puts "choosing #{move} from eligible moves #{moves}"
+		end
+
+		return move
+	end
+
+	def immediate_winner(game, eligible_moves, side)
+		winner = ""
+		result = [false, winner]
+		eligible_moves.each do |move|
+			trial_board = current_board(game).dup
+			trial_board[move] = side
+			if  board_has_winning_row(trial_board, side) || board_has_winning_col(trial_board, side) ||
+				board_has_winning_diag(trial_board, side)
+				puts "winner found for player #{side}, index #{move} in trial_board #{trial_board}"
+				return result = [true, move]
+			end
+		end
+
+		return result
+	end
+
+	def current_board(game)
+		game[game[:current_turn]][:board]
+	end
+
+	def get_eligible_moves(game)
+		moves = []
+		#not taken
+		current_board = game[game[:current_turn]][:board]
+		blank = empty_slots(current_board)
+		#banned
+		banned = game[game[:current_turn]][:banned]
+		puts "blank: #{blank}"
+		puts "banned: #{banned}"
+		moves = blank - banned
+		return moves.uniq
+	end
+
+	def empty_slots(board)
+		empty_locs = []
+		for i in 0...board.length
+			empty_locs << i if board[i] == "0"
+		end
+		return empty_locs
+	end
+
+	def board_has_winning_row(trial_board, side)
+		has_winning_row = false
+		if  ([side,trial_board[0],trial_board[1],trial_board[2]].uniq.length == 1) ||
+		    ([side,trial_board[3],trial_board[4],trial_board[5]].uniq.length == 1) ||
+		    ([side,trial_board[6],trial_board[7],trial_board[8]].uniq.length == 1)
+			has_winning_row = true
+		end
+		return has_winning_row
+	end
+
+	def board_has_winning_col(trial_board, side)
+		has_winning_col = false
+		if 	([side,trial_board[0],trial_board[3],trial_board[6]].uniq.length == 1) ||
+			([side,trial_board[1],trial_board[4],trial_board[7]].uniq.length == 1) ||
+			([side,trial_board[2],trial_board[5],trial_board[8]].uniq.length == 1)
+			has_winning_col = true
+		end
+		return has_winning_col
+	end
+
+	def board_has_winning_diag(trial_board, side)
+		has_winning_diag = false
+		if  ([side,trial_board[0],trial_board[4],trial_board[8]].uniq.length == 1) ||
+			([side,trial_board[2],trial_board[4],trial_board[6]].uniq.length == 1)
+			has_winning_diag = true
+		end
+		return has_winning_diag
+	end
+
+	def board_has_losing_row(complete_board, player)
+		has_losing_row = false
+		if  ([player,complete_board[0],complete_board[1],complete_board[2]].uniq.length == 1) ||
+		    ([player,complete_board[3],complete_board[4],complete_board[5]].uniq.length == 1) ||
+		    ([player,complete_board[6],complete_board[7],complete_board[8]].uniq.length == 1)
+			has_losing_row = true
+		end
+		return has_losing_row
+	end
+
+	def board_has_losing_col(complete_board, player)
+		has_losing_col = false
+		if 	([player,complete_board[0],complete_board[3],complete_board[6]].uniq.length == 1) ||
+			([player,complete_board[1],complete_board[4],complete_board[7]].uniq.length == 1) ||
+			([player,complete_board[2],complete_board[5],complete_board[8]].uniq.length == 1)
+			has_losing_col = true
+		end
+		return has_losing_col
+	end
+
+	def board_has_losing_diag(complete_board, player)
+		has_losing_diag = false
+		if ([player,complete_board[0],complete_board[4],complete_board[8]].uniq.length == 1) ||
+			([player,complete_board[2],complete_board[4],complete_board[6]].uniq.length == 1)
+			has_losing_diag = true
+		end
+		return has_losing_diag
+	end
+end
+
+=begin
 	def print_board
 		puts board
 	end
@@ -93,19 +312,7 @@ class TicTacToe < ActiveRecord::Base
 		moves_p2 = empty_str.length - moves_p1
 		puts "moves_p2: #{moves_p2}"
 		#
-=begin
-		for i in 0...empty_str.length
-			start_str[i] = "2"
-			for j in 0...empty_str.length
-				if i != j
-					start_str[j] = "2"
-					all_boards << start_str.dup
-					start_str[j] = "1"
-				end
-			end
-			start_str[i] = "1"
-		end
-=end
+
 		#player 2's first turn
 		moves_p2_left = moves_p2 - 1
 		for i in 0...empty_str.length
@@ -190,6 +397,7 @@ class TicTacToe < ActiveRecord::Base
 		    ([player,complete_board[6],complete_board[7],complete_board[8]].uniq.length == 1)
 			has_losing_row = true
 		end
+		return has_losing_row
 	end
 
 	def board_has_losing_col(complete_board, player)
@@ -199,6 +407,7 @@ class TicTacToe < ActiveRecord::Base
 			([player,complete_board[2],complete_board[5],complete_board[8]].uniq.length == 1)
 			has_losing_col = true
 		end
+		return has_losing_col
 	end
 
 	def board_has_losing_diag(complete_board, player)
@@ -207,6 +416,7 @@ class TicTacToe < ActiveRecord::Base
 			([player,complete_board[2],complete_board[4],complete_board[6]].uniq.length == 1)
 			has_losing_diag = true
 		end
+		return has_losing_diag
 	end
 
 
@@ -216,3 +426,4 @@ class TicTacToe < ActiveRecord::Base
 		return start_str
 	end
 end
+=end
