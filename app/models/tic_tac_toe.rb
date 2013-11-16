@@ -18,7 +18,23 @@ class TicTacToe < ActiveRecord::Base
 			puts "game with player_first false: #{game}"
 		end
 
-		take_turn(game)
+		move = ""
+		move = take_turn(game)
+		
+		puts "START IS OVER"
+		turn = compute_turn
+		puts "turn: #{turn}"
+		best = game[turn][:move]
+		puts "FINAL best: #{best}"
+		return best
+	end
+
+	def compute_turn
+		if player_first
+
+		else
+		end
+		return 2
 	end
 
 	def take_turn(game)
@@ -28,14 +44,35 @@ class TicTacToe < ActiveRecord::Base
 
 		if move == nil
 			puts "no move was found. move: #{move}"
-
+			if !game[game[:current_turn]][:board].include?("0")
+				puts "CAT'S GAME!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+				turn = compute_turn
+				puts "CAT'S GAME turn: #{turn}"
+				best = game[turn][:move]
+				game[:cats] = true
+				#return best
+			end
 			#if no possible move(get_eligible_moves returns no moves) then call correct_prev_turn
+			game[:current_turn] -= 1 #needs to go back an extra turn
+			correct_prev_turn(game) unless game[:cats]
 		else
 			#if we win or tie, return this move
 			if game[:won]
+				#update board with winning move
+				#game[game[:current_turn]][:move] = move
+				#game[:current_turn] += 1
+
 				puts "game won, returning winning move at index #{move}"
 				puts "winning game was #{game}"
-				return move
+				turn = compute_turn
+				puts "turn: #{turn}"
+				best = game[turn][:move]
+				puts "best: #{best}"
+
+
+
+				#need to end game here
+				#return best
 			end
 
 			new_board = game[game[:current_turn]][:board].dup
@@ -59,7 +96,7 @@ class TicTacToe < ActiveRecord::Base
 			puts "game hash updated: #{game}"
 
 			#if picked a move, run gen_player_moves
-			gen_player_moves(game)
+			gen_player_moves(game) unless game[:won]
 		end
 
 		return move
@@ -98,7 +135,17 @@ class TicTacToe < ActiveRecord::Base
 			#if no instant winner, for each possible player move, run take_turn w/ that as plyr turn
 			#for loop runs thru moves, calls take_turn within loop with that move (and inc turn)
 			init_board = game[game[:current_turn]][:board].dup
+			turn = ""
 			for i in 0...moves.length
+				game[:cats] = false
+				#when coming from a comp won game, need to make turn the same as it was
+				  #last time in the for loop, or will have 2 plyr tns in a row
+				if game[:won]
+					game[:current_turn] -= 1
+					game[game[:current_turn]+1] = {}
+					game[:won] = false
+				end
+
 				new_board = init_board.dup
 				new_board[moves[i]] = @player
 				game[game[:current_turn]][:player] = @player
@@ -137,6 +184,7 @@ class TicTacToe < ActiveRecord::Base
 		
 		#could delete last current turn here {}
 		game[game[:current_turn]+1]= {}
+		game[game[:current_turn]+2]= {}
 		puts "game post-rollback #{game}"
 		
 		#call take_turn

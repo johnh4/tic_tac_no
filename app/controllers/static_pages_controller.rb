@@ -9,6 +9,6 @@ class StaticPagesController < ApplicationController
   	@game.board = "100000000"
   	#@game.player_first = false
   	#@best_move = @game.try_moves
-  	@game.start
+  	@move = @game.start
   end
 end
