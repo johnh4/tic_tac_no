@@ -34,18 +34,28 @@ class TicTacToe < ActiveRecord::Base
 			#if we win or tie, return this move
 			if game[:won]
 				puts "game won, returning winning move at index #{move}"
+				puts "winning game was #{game}"
 				return move
 			end
 
 			new_board = game[game[:current_turn]][:board].dup
-			#increment turn
+			#increment turn (unless this is a repeat turn)
+
+			saved_bans = []
+			if game[game[:current_turn]][:is_repeat]
+				saved_bans = game[game[:current_turn]][:banned]
+				game[:current_turn] -= 1
+				game[game[:current_turn]][:is_repeat] = false
+			end
 			puts "current turn increased to #{game[:current_turn] + 1} from #{game[:current_turn]}"
 			game[:current_turn] += 1
 
 			#add move to hash
 			new_board[move] = @comp
-			game[game[:current_turn]] = { player: @comp, move: move, banned: [], 
-										  board: board = new_board }
+			game[game[:current_turn]] = { player: @comp, move: move, banned: saved_bans, 
+										  board: new_board }
+
+
 			puts "game hash updated: #{game}"
 
 			#if picked a move, run gen_player_moves
@@ -60,23 +70,54 @@ class TicTacToe < ActiveRecord::Base
 		moves = empty_slots(current_board(game))
 		puts "valid player moves: #{moves}"
 		winner_arr = immediate_winner(game, moves, @player)
+
+		new_board = game[game[:current_turn]][:board].dup
+		game[:current_turn] += 1
+
+		#new_board[winner_arr[1]] = @player
+		game[game[:current_turn]] = { player: @player, move: 11, banned: [], 
+									  board: board = new_board }
+		#puts "game hash updated: #{game}"
 		if winner_arr[0]
 			puts "player has an immediate winner at index #{winner_arr[1]}"
 
-			new_board = game[game[:current_turn]][:board].dup
-			game[:current_turn] += 1
+			#new_board = game[game[:current_turn]][:board].dup
+			#game[:current_turn] += 1
+# 			#new_board[winner_arr[1]] = @player
+#			#game[game[:current_turn]] = { player: @player, move: winner_arr[1], banned: [], 
+#			#							  board: board = new_board }
+			#puts "game hash updated: #{game}"
 
+			#new_board = game[game[:current_turn]][:board].dup
 			new_board[winner_arr[1]] = @player
-			game[game[:current_turn]] = { player: @player, move: winner_arr[1], banned: [], 
-										  board: board = new_board }
-			puts "game hash updated: #{game}"
-
-			#if any move wins game, call correct_prev_turn
+			game[game[:current_turn]][:move] = winner_arr[1]
+			game[game[:current_turn]][:board] = new_board
+			#if any player move wins game, call correct_prev_turn
 			correct_prev_turn(game)
 		else
 			#if no instant winner, for each possible player move, run take_turn w/ that as plyr turn
 			#for loop runs thru moves, calls take_turn within loop with that move (and inc turn)
+			init_board = game[game[:current_turn]][:board].dup
+			for i in 0...moves.length
+				new_board = init_board.dup
+				new_board[moves[i]] = @player
+				game[game[:current_turn]][:player] = @player
+				game[game[:current_turn]][:move] = moves[i]
+				game[game[:current_turn]][:board] = new_board
+				puts "index #{i} in gen_player_moves LOOP, game updated: #{game}"
 
+				#if player_first
+				#	alt_game = { current_turn: 1, 1 => { player: 1, move: 10, banned: [], board: board },
+				#			 won: false }
+				#	puts "game with player_first: #{game}"
+				#else
+				#	game = { current_turn: 1, 1 => { player: 2, move: 10, banned: [], board: board },
+				#			 won: false }
+				#	alt_puts "game with player_first false: #{game}"
+				#end
+				
+				take_turn(game)
+			end
 		end
 
 	end
@@ -89,20 +130,28 @@ class TicTacToe < ActiveRecord::Base
 		move = game[game[:current_turn]-1][:move]
 		game[game[:current_turn]-1][:banned] << move
 		game[game[:current_turn]-1][:board][move] = "0"
+		game[game[:current_turn]-1][:move] = "10"
 		#decrement current turn
 		game[:current_turn] -= 1
-		puts "game post-rollback #{game}"
-		#call take_turn
+		game[game[:current_turn]][:is_repeat] = true
 		
+		#could delete last current turn here {}
+		game[game[:current_turn]+1]= {}
+		puts "game post-rollback #{game}"
+		
+		#call take_turn
+		take_turn(game)
+
+		#in no eligible move case, rollback 2 turns(to last comp turn)
 	end
 
 	def pick_move(game)
 		moves = get_eligible_moves(game)
 		move = ""
 		puts "get_eligible_moves result: #{moves}"
-		puts "game[1]: #{game[1]}"
+		#puts "game[1]: #{game[1]}"
 		puts "game[:current_turn]: #{game[:current_turn]}"
-		puts "game[:board]: #{game[1][:board]}"
+		puts "game[:board]: #{game[game[:current_turn]][:board]}"
 
 		#check if immediate winner in moves
 		winner_arr = immediate_winner(game, moves, @comp)
