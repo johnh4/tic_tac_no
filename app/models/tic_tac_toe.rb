@@ -18,6 +18,8 @@ class TicTacToe < ActiveRecord::Base
 			puts "game with player_first false: #{game}"
 		end
 
+		
+		
 		move = ""
 		move = take_turn(game)
 		
@@ -134,24 +136,114 @@ class TicTacToe < ActiveRecord::Base
 		else
 			#if no instant winner, for each possible player move, run take_turn w/ that as plyr turn
 			#for loop runs thru moves, calls take_turn within loop with that move (and inc turn)
-			init_board = game[game[:current_turn]][:board].dup
-			turn = ""
+			#init_board = game[game[:current_turn]][:board].dup
+			turn = game[:current_turn]
+			first_run = true
+			pre_moves = moves.dup
+			prev_turns_pre = []
+			#TODO: CORRECT range when tn 1 dynamic
+			for k in 2...turn
+				prev_turns_pre << game[k][:move]
+			end
+			puts "prev_turns_pre: #{prev_turns_pre}"
 			for i in 0...moves.length
+				prev_turns = []
+				for k in 2...turn
+					prev_turns << game[k][:move]
+				end
+				if prev_turns != prev_turns_pre
+					puts "prev_turns != prev_turns_pre"
+					puts "prev_turns_pre: #{prev_turns_pre}"
+					puts "prev_turns: #{prev_turns}"
+				end
+				#when in the for loop, go back to the turn that it was on the last time
+				if game[:won] || game[:cats]
+					#and reset the taken turns
+					for j in turn+1..game[:current_turn]
+						game[j] = {}
+						puts "game[#{j}] should be removed"
+					end
+					puts "changing turn from #{game[:current_turn]} to #{turn}"
+					game[:current_turn] = turn
+				end
+
 				game[:cats] = false
 				#when coming from a comp won game, need to make turn the same as it was
 				  #last time in the for loop, or will have 2 plyr tns in a row
 				if game[:won]
-					game[:current_turn] -= 1
-					game[game[:current_turn]+1] = {}
+					#game[:current_turn] -= 1
+					#game[game[:current_turn]+1] = {}
 					game[:won] = false
 				end
+				new_moves = empty_slots(current_board(game))
+				if moves != new_moves
+					puts "moves != new_moves"
+				end
+				taken_moves = []
+				for j in 2...turn
+					taken_moves << game[j][:move]
+				end
+				if taken_moves.include?(moves[i])
+					puts "ERROR: taken_moves (#{taken_moves}) includes moves[i] (#{moves[i]})"
+					break
+				end
+				puts "pre_moves: #{pre_moves}"
+				puts "moves: #{moves}"
 
-				new_board = init_board.dup
-				new_board[moves[i]] = @player
+				#init_board = game[game[:current_turn]][:board].dup
+				#new_board = init_board.dup
+				#new_board[moves[i]] = @player
+
+				#undo prev iteration of loop if nec
+				puts "first_run: #{first_run} for turn #{turn}. loop index #{i}"
+				if i > 0
+					undo_this_move = moves[i-1]
+					unless first_run
+						game[game[:current_turn]][:board][undo_this_move] = "0"
+						puts "undid move at index #{undo_this_move} from last run of loop"
+					end
+					first_run = false
+					#doesn't work when last
+				end
+
+				if(game[game[:current_turn]][:board][moves[i]] != "0")
+					puts "index is #{i}"
+					puts "moves[i]: #{moves[i]}"
+					puts "turn: #{turn}"
+					puts "game[game[:current_turn]][:board][moves[i]] is taken: #{game[game[:current_turn]][:board][moves[i]]}"
+					puts "game[game[:current_turn]][:board]: #{game[game[:current_turn]][:board]}"
+				end
+
 				game[game[:current_turn]][:player] = @player
 				game[game[:current_turn]][:move] = moves[i]
-				game[game[:current_turn]][:board] = new_board
+				game[game[:current_turn]][:board][moves[i]] = @player
+				puts "game[:current_turn]]: #{game[:current_turn]}"
+				puts "game[game[:current_turn]][:move]: #{game[game[:current_turn]][:move]}"
+				puts "game[game[:current_turn]][:board][moves[i]]: #{game[game[:current_turn]][:board][moves[i]]}"
+				puts "game[game[:current_turn]][:board]: #{game[game[:current_turn]][:board]}"
+
 				puts "index #{i} in gen_player_moves LOOP, game updated: #{game}"
+
+				non_zeroes = 0
+				for j in 0...game[game[:current_turn]][:board].length
+					if game[game[:current_turn]][:board][j] != "0"
+						non_zeroes += 1
+					end
+				end
+				if non_zeroes != turn
+					puts "ALERT!! nonzeroes(#{non_zeroes}) doesn't equal turn (#{turn})"
+					reconstr_board = "100000000"
+					#TO DO: CORRECT LOOP to 1..turn when turn 1 is made dynamic
+					for j in 2..turn
+						correct_move = game[j][:move]
+						side = game[j][:player]
+						reconstr_board[correct_move] = side.to_s
+					end
+					puts "reconstr_board: #{reconstr_board}"
+					corrected_board = reconstr_board.dup
+					puts "changing #{game[game[:current_turn]][:board]} to #{corrected_board}"
+					game[game[:current_turn]][:board] = corrected_board
+				end
 
 				#if player_first
 				#	alt_game = { current_turn: 1, 1 => { player: 1, move: 10, banned: [], board: board },
@@ -164,9 +256,10 @@ class TicTacToe < ActiveRecord::Base
 				#end
 				
 				take_turn(game)
+				#game[turn][:board][i] = "0" 
+				#puts "undid move at index #{i} on turn #{turn} from last run of loop. board: #{game[turn][:board][i]}"
 			end
 		end
-
 	end
 
 	#called when plyr wins or no eligible move
