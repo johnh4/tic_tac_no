@@ -11,13 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131113001659) do
+ActiveRecord::Schema.define(version: 20131118155429) do
 
   create_table "tic_tac_toes", force: true do |t|
     t.string   "board",        default: "000000000"
     t.boolean  "player_first", default: true
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "turns_taken",  default: ""
   end
 
 end

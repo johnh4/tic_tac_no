@@ -1,6 +1,10 @@
 class TicTacToe < ActiveRecord::Base
 
-	def start
+	def start(first_move)
+		if first_move == 2 || 6 || 8
+			first_move = 0
+		end
+		@game_over = false
 		if player_first
 			@player = "1"
 			@comp = "2"
@@ -8,8 +12,9 @@ class TicTacToe < ActiveRecord::Base
 			@comp = "1"
 			@player = "2"
 		end
+		board[first_move] = @player
 		if player_first
-			game = { current_turn: 1, 1 => { player: 1, move: 10, banned: [], board: board },
+			game = { current_turn: 1, 1 => { player: 1, move: first_move, banned: [], board: board },
 					 won: false }
 			puts "game with player_first: #{game}"
 		else
@@ -18,8 +23,8 @@ class TicTacToe < ActiveRecord::Base
 			puts "game with player_first false: #{game}"
 		end
 
-		
-		
+		@loop_had_loss = false
+
 		move = ""
 		move = take_turn(game)
 		
@@ -29,6 +34,56 @@ class TicTacToe < ActiveRecord::Base
 		best = game[turn][:move]
 		puts "FINAL best: #{best}"
 		return best
+	end
+
+	def user_move(move)
+
+		if player_first
+			@player = "1"
+			@comp = "2"
+		else
+			@comp = "1"
+			@player = "2"
+		end
+
+		#game[:current_turn] += 1
+		#new_board = board.dup
+		puts "#{board}"
+		board[move] = @player
+		self.turns_taken += move.to_s
+		puts "@player: #{@player}"
+		turn = figure_turn
+		puts "turn: #{turn}"
+		game = { current_turn: turn, turn => { player: 1, move: move, banned: [], board: board },
+					 won: false }
+		puts "board: #{board}"
+		#game[turn] = { player: @player, move: move, banned: [], 
+		#							  board: board }
+
+		#game[:current_turn] = turn
+
+		my_move = ""
+		my_move = take_turn(game)
+		
+		puts "USER MOVE IS OVER"
+		#turn = compute_turn
+		turn = figure_turn+1
+		puts "turn: #{turn}"
+		best = game[turn][:move]
+		self.turns_taken += best.to_s
+		puts "FINAL best: #{best}"
+		board[best] = @comp
+		return best
+	end
+
+	def figure_turn
+		non_zeroes = 0
+		for i in 0...board.length
+			if board[i] != "0"
+				non_zeroes += 1
+			end
+		end
+		return non_zeroes
 	end
 
 	def compute_turn
@@ -48,7 +103,7 @@ class TicTacToe < ActiveRecord::Base
 			puts "no move was found. move: #{move}"
 			if !game[game[:current_turn]][:board].include?("0")
 				puts "CAT'S GAME!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-				turn = compute_turn
+				turn = figure_turn + 1
 				puts "CAT'S GAME turn: #{turn}"
 				best = game[turn][:move]
 				game[:cats] = true
@@ -66,9 +121,13 @@ class TicTacToe < ActiveRecord::Base
 
 				puts "game won, returning winning move at index #{move}"
 				puts "winning game was #{game}"
-				turn = compute_turn
+				turn = figure_turn + 1
 				puts "turn: #{turn}"
-				best = game[turn][:move]
+				if game[turn]
+					best = game[turn][:move]
+				else
+					best = move
+				end
 				puts "best: #{best}"
 
 
@@ -115,8 +174,9 @@ class TicTacToe < ActiveRecord::Base
 
 		#new_board[winner_arr[1]] = @player
 		game[game[:current_turn]] = { player: @player, move: 11, banned: [], 
-									  board: board = new_board }
+									  board: new_board }
 		#puts "game hash updated: #{game}"
+		
 		if winner_arr[0]
 			puts "player has an immediate winner at index #{winner_arr[1]}"
 
@@ -132,6 +192,8 @@ class TicTacToe < ActiveRecord::Base
 			game[game[:current_turn]][:move] = winner_arr[1]
 			game[game[:current_turn]][:board] = new_board
 			#if any player move wins game, call correct_prev_turn
+			@loop_had_loss = true
+			puts "setting @loop_had_loss to #{@loop_had_loss}"
 			correct_prev_turn(game)
 		else
 			#if no instant winner, for each possible player move, run take_turn w/ that as plyr turn
@@ -140,22 +202,32 @@ class TicTacToe < ActiveRecord::Base
 			turn = game[:current_turn]
 			first_run = true
 			pre_moves = moves.dup
-			prev_turns_pre = []
+			#prev_turns_pre = []
 			#TODO: CORRECT range when tn 1 dynamic
-			for k in 2...turn
-				prev_turns_pre << game[k][:move]
-			end
-			puts "prev_turns_pre: #{prev_turns_pre}"
+			#for k in 1...turn
+			#	prev_turns_pre << game[k][:move]
+			#end
+			#puts "prev_turns_pre: #{prev_turns_pre}"
+			finished = false
+			puts "setting finished to false"
 			for i in 0...moves.length
-				prev_turns = []
-				for k in 2...turn
-					prev_turns << game[k][:move]
+				puts "finished is #{finished}"
+				if finished == true
+					break
 				end
-				if prev_turns != prev_turns_pre
-					puts "prev_turns != prev_turns_pre"
-					puts "prev_turns_pre: #{prev_turns_pre}"
-					puts "prev_turns: #{prev_turns}"
+				if @game_over 
+					puts "that's game? above"
+					break
 				end
+				#prev_turns = []
+				#for k in 1...turn
+				#	prev_turns << game[k][:move]
+				#end
+				#if prev_turns != prev_turns_pre
+				#	puts "prev_turns != prev_turns_pre"
+				#	puts "prev_turns_pre: #{prev_turns_pre}"
+				#	puts "prev_turns: #{prev_turns}"
+				#end
 				#when in the for loop, go back to the turn that it was on the last time
 				if game[:won] || game[:cats]
 					#and reset the taken turns
@@ -175,16 +247,43 @@ class TicTacToe < ActiveRecord::Base
 					#game[game[:current_turn]+1] = {}
 					game[:won] = false
 				end
+				if game[game[:current_turn]] == {}
+					#in for loop, but no turn was created before it. so we're doing old irrel loops.
+					puts "BLANK TURN. Win condition?"
+					break
+				end
+				puts "game[:current_turn]]: #{game[:current_turn]}"
+				puts "game[game[:current_turn]][:move]: #{game[game[:current_turn]][:move]}"
+				puts "game[game[:current_turn]][:board]: #{game[game[:current_turn]][:board]}"
+				puts "game[game[:current_turn]][:board][moves[i]]: #{game[game[:current_turn]][:board][moves[i]]}"
+
 				new_moves = empty_slots(current_board(game))
+				puts "current_board(game): #{current_board(game)}"
 				if moves != new_moves
 					puts "moves != new_moves"
 				end
 				taken_moves = []
-				for j in 2...turn
-					taken_moves << game[j][:move]
+				for j in 1...turn
+					#if game[j][:move]
+					#	taken_moves << game[j][:move] 
+					#else
+						#taken_moves << game[turn][:board]
+						taken_moves << self.turns_taken[j-1]
+					#end
 				end
+				#for j in 0...game[game[turn]][:board].length
+				#	if game[game[turn]][:board][j] != "0"
+				#		taken_moves << j
+				#	end
+				#end
 				if taken_moves.include?(moves[i])
 					puts "ERROR: taken_moves (#{taken_moves}) includes moves[i] (#{moves[i]})"
+					#break
+					#game_over = true
+					#break
+					
+					#puts "@loop_had_loss: #{@loop_had_loss}"
+					#break if @loop_had_loss
 					break
 				end
 				puts "pre_moves: #{pre_moves}"
@@ -232,11 +331,29 @@ class TicTacToe < ActiveRecord::Base
 				end
 				if non_zeroes != turn
 					puts "ALERT!! nonzeroes(#{non_zeroes}) doesn't equal turn (#{turn})"
-					reconstr_board = "100000000"
+					reconstr_board = "000000000"
 					#TO DO: CORRECT LOOP to 1..turn when turn 1 is made dynamic
-					for j in 2..turn
-						correct_move = game[j][:move]
-						side = game[j][:player]
+					#for j in 1..turn
+					#	correct_move = game[j][:move]
+					#	side = game[j][:player]
+					#	reconstr_board[correct_move] = side.to_s
+					#end
+					puts "self.turns_taken: #{self.turns_taken}"
+					#puts "self.turns_taken.length: #{self.turns_taken.length}"
+					for j in 0...turn
+						if self.turns_taken.length >0
+							correct_move = self.turns_taken[j].to_i
+							test_var = ""
+						end
+						test_var
+						if player_first
+							side = 1 if j % 2 == 1
+							side = 2 if j % 2 == 0
+						else
+							side = 2 if j % 2 == 1
+							side = 1 if j % 2 == 0
+						end
+						puts "side: #{side}"
 						reconstr_board[correct_move] = side.to_s
 					end
 					puts "reconstr_board: #{reconstr_board}"
@@ -254,11 +371,19 @@ class TicTacToe < ActiveRecord::Base
 				#			 won: false }
 				#	alt_puts "game with player_first false: #{game}"
 				#end
-				
+				if @game_over 
+					puts "that's game? below"
+					break
+				end
 				take_turn(game)
 				#game[turn][:board][i] = "0" 
 				#puts "undid move at index #{i} on turn #{turn} from last run of loop. board: #{game[turn][:board][i]}"
+				puts "ending index #{i} of turn #{turn}"
 			end
+			@loop_had_loss = false
+			puts "setting @loop_had_loss to #{@loop_had_loss}"
+			finished = true
+			puts "outside of for loop, setting finished to #{finished}"
 		end
 	end
 
