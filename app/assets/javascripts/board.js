@@ -24,9 +24,10 @@ $(document).ready(function(){
 		}
 	}
 
-	printBoard(boardStr);
-	paintBoard(boardStr);
 	function addJSBoard(board){
 		$('#js-board').html('js-board: ' + board);
 	}
+	
+	printBoard(boardStr);
+	paintBoard(boardStr);
 });

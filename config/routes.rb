@@ -1,5 +1,6 @@
 TicTacNo::Application.routes.draw do
   get "static_pages/home"
+  post "game/:game_id/:move", to: "static_pages#user_turn"
 
   root to: "static_pages#home"
 
