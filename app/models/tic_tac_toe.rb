@@ -283,12 +283,12 @@ class TicTacToe < ActiveRecord::Base
 					taken_moves << self.turns_taken[j]
 				end
 				for j in 1...game[:current_turn]
-					#if game[j][:move]
+					if game[j]
 						taken_moves << game[j][:move] #use the self.turns_taken one?
-					#else
+					else
 						#taken_moves << game[turn][:board]
-						#taken_moves << self.turns_taken[j-1]
-					#end
+						taken_moves << self.turns_taken[j-1]
+					end
 				end
 				#for j in 0...game[game[turn]][:board].length
 				#	if game[game[turn]][:board][j] != "0"

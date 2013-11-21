@@ -33,13 +33,15 @@ class TicTacToesController < ApplicationController
     @game = TicTacToe.find(params[:id])
     prev_board = copy_board(@game.board)
     move = params[:move].to_i
-    #@game.board[@game.user_move(move)] = "2" #if @game.board[move] == "0"
-    #new_board = @game.board
-    #@game.update(board: new_board)
     if @game.board[move] == "0"
-      @comp_move = @game.user_move(move)
       prev_board[move] = "1"
-      prev_board[@comp_move] = "2"
+      if empty_count(@game.board) > 2 #@game.board.include?("0")
+        @comp_move = @game.user_move(move)
+        prev_board[@comp_move] = "2"
+      else
+        #game over condition
+        @game_over = true
+      end
     end
     @game.board = ""
     @game.save
@@ -47,7 +49,6 @@ class TicTacToesController < ApplicationController
       redirect_to @game
       #render json: @game
     else
-      puts "not saved"
       redirect_to root_path
     end
   end

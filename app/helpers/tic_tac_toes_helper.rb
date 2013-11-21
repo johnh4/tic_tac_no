@@ -6,4 +6,12 @@ module TicTacToesHelper
 		end
 		return copy
 	end
+
+	def empty_count(board)
+		empty_locs = []
+		for i in 0...board.length
+			empty_locs << i if board[i] == "0"
+		end
+		return empty_locs.length
+	end
 end
