@@ -37,7 +37,7 @@ class TicTacToe < ActiveRecord::Base
 	end
 
 	def user_move(move)
-
+		@game_over = false
 		if player_first
 			@player = "1"
 			@comp = "2"
@@ -49,14 +49,18 @@ class TicTacToe < ActiveRecord::Base
 		#game[:current_turn] += 1
 		#new_board = board.dup
 		puts "#{board}"
+		set_turns_taken
+
 		board[move] = @player
-		self.turns_taken += move.to_s
+		#self.turns_taken += move.to_s
 		puts "@player: #{@player}"
 		turn = figure_turn
 		puts "turn: #{turn}"
 		game = { current_turn: turn, turn => { player: 1, move: move, banned: [], board: board },
 					 won: false }
 		puts "board: #{board}"
+
+
 		#game[turn] = { player: @player, move: move, banned: [], 
 		#							  board: board }
 
@@ -70,12 +74,22 @@ class TicTacToe < ActiveRecord::Base
 		turn = figure_turn+1
 		puts "turn: #{turn}"
 		best = game[turn][:move]
-		self.turns_taken += best.to_s
+		#self.turns_taken += best.to_s
 		puts "FINAL best: #{best}"
 		board[best] = @comp
 		return best
 	end
-
+	def set_turns_taken
+		puts "self.turns_taken before being set: #{self.turns_taken}"
+		turns = ""
+		for i in 0...board.length
+			if board[i] != "0"
+				turns += i.to_s
+			end
+		end
+		self.turns_taken = turns
+		puts "self.turns_taken after being set: #{self.turns_taken}"
+	end
 	def figure_turn
 		non_zeroes = 0
 		for i in 0...board.length
@@ -211,6 +225,7 @@ class TicTacToe < ActiveRecord::Base
 			finished = false
 			puts "setting finished to false"
 			for i in 0...moves.length
+				puts "starting index #{i} of turn #{turn}"
 				puts "finished is #{finished}"
 				if finished == true
 					break
@@ -262,13 +277,17 @@ class TicTacToe < ActiveRecord::Base
 				if moves != new_moves
 					puts "moves != new_moves"
 				end
+
 				taken_moves = []
-				for j in 1...turn
+				for j in 0...self.turns_taken.length
+					taken_moves << self.turns_taken[j]
+				end
+				for j in 1...game[:current_turn]
 					#if game[j][:move]
-					#	taken_moves << game[j][:move] 
+						taken_moves << game[j][:move] #use the self.turns_taken one?
 					#else
 						#taken_moves << game[turn][:board]
-						taken_moves << self.turns_taken[j-1]
+						#taken_moves << self.turns_taken[j-1]
 					#end
 				end
 				#for j in 0...game[game[turn]][:board].length
@@ -279,7 +298,7 @@ class TicTacToe < ActiveRecord::Base
 				if taken_moves.include?(moves[i])
 					puts "ERROR: taken_moves (#{taken_moves}) includes moves[i] (#{moves[i]})"
 					#break
-					#game_over = true
+					@game_over = true
 					#break
 					
 					#puts "@loop_had_loss: #{@loop_had_loss}"
@@ -329,8 +348,8 @@ class TicTacToe < ActiveRecord::Base
 						non_zeroes += 1
 					end
 				end
-				if non_zeroes != turn
-					puts "ALERT!! nonzeroes(#{non_zeroes}) doesn't equal turn (#{turn})"
+				if non_zeroes != game[:current_turn]
+					puts "ALERT!! nonzeroes(#{non_zeroes}) doesn't equal game[:current_turn] (#{game[:current_turn]})"
 					reconstr_board = "000000000"
 					#TO DO: CORRECT LOOP to 1..turn when turn 1 is made dynamic
 					#for j in 1..turn
@@ -340,18 +359,22 @@ class TicTacToe < ActiveRecord::Base
 					#end
 					puts "self.turns_taken: #{self.turns_taken}"
 					#puts "self.turns_taken.length: #{self.turns_taken.length}"
-					for j in 0...turn
-						if self.turns_taken.length >0
-							correct_move = self.turns_taken[j].to_i
-							test_var = ""
+					puts "taken_moves before adding curr turn: #{taken_moves}"
+					taken_moves << game[game[:current_turn]][:move]
+					puts "taken_moves after adding curr turn: #{taken_moves}"
+					for j in 0...game[:current_turn]
+						#if self.turns_taken.length >0
+						if taken_moves.length >0
+							#correct_move = self.turns_taken[j].to_i
+							correct_move = taken_moves[j].to_i
 						end
-						test_var
+						j_turn = j + 1
 						if player_first
-							side = 1 if j % 2 == 1
-							side = 2 if j % 2 == 0
+							side = 1 if j_turn % 2 == 1
+							side = 2 if j_turn % 2 == 0
 						else
-							side = 2 if j % 2 == 1
-							side = 1 if j % 2 == 0
+							side = 2 if j_turn % 2 == 1
+							side = 1 if j_turn % 2 == 0
 						end
 						puts "side: #{side}"
 						reconstr_board[correct_move] = side.to_s

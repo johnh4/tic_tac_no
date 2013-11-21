@@ -13,21 +13,15 @@ class StaticPagesController < ApplicationController
     #@result_2 = @game.user_move(@hash, 1)
     #@hash_2 = @result_2[1]
     #@move_2 = @result_2[0]
+    #@game.turns_taken = ""
+  	#@game.board = "000000000"
+    #@move_2 = @game.user_move(0) #player's turn 3
+    #@move_2 = @game.user_move(2) #player's turn 5
+    #@move_2 = @game.user_move(3) #player's turn 7
+    #@game.save
     
-  	@game.board = "000000012"
-    @move_2 = @game.user_move(4) #player's turn 3
-    @move_2 = @game.user_move(2) #player's turn 5
-    @game.save
-  	
-    #@move_2 = @game.user_move(6) #player's turn 7
   	
     #@move_3 = @game.user_move(2)
   end
 
-  def user_turn
-    game = params[:game_id]
-    move = params[:move]
-    @move_3 = @game.user_move(3)
-    @game.save
-  end
 end

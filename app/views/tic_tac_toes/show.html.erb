@@ -1,19 +1,17 @@
+<h1>TicTacToes#show</h1>
+<p>Find me in app/views/tic_tac_toes/show.html.erb</p>
+
 <h1>StaticPages#home</h1>
-
-<%= link_to "new game", new_tic_tac_to_path %>
-
+<%= form_for(TicTacToe.new) do |f| %>
+	<%= f.text_field :board %>
+	<%= f.submit "New Game", class: "btn btn-primary" %>
+<% end %>
 board: 
 <div id="board-value"><%= @game.board %></div>
 <br>
 
-empty: <%= @empty %>
-<br>
-
 player_first: <%= @game.player_first %>
-<br>
-move: <%= @move %>
-<br>
-move_2: <%= @move_2 %>
+turns_taken: <%= @game.turns_taken %>
 
 <div id="js-board"></div>
 <div id="board">

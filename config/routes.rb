@@ -1,6 +1,9 @@
 TicTacNo::Application.routes.draw do
+  
   get "static_pages/home"
-  post "game/:game_id/:move", to: "static_pages#user_turn"
+  get "tic_tac_toes/:id/:move", to: "tic_tac_toes#user_turn", as: "user_move"
+
+  resources :tic_tac_toes
 
   root to: "static_pages#home"
 

@@ -1,0 +1,9 @@
+<h1>TicTacToes#new</h1>
+<p>Find me in app/views/tic_tac_toes/new.html.erb</p>
+<%= form_for(@game) do |f| %>
+	<%= f.label :board %>
+	<%= f.text_field :board %>
+
+	<%= f.submit "Start!", class: "btn btn-primary" %>
+
+<% end %>
