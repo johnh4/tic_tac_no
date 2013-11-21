@@ -49,10 +49,10 @@ class TicTacToe < ActiveRecord::Base
 		#game[:current_turn] += 1
 		#new_board = board.dup
 		puts "#{board}"
-		set_turns_taken
+		#set_turns_taken
 
 		board[move] = @player
-		#self.turns_taken += move.to_s
+		self.turns_taken += move.to_s
 		puts "@player: #{@player}"
 		turn = figure_turn
 		puts "turn: #{turn}"
@@ -74,7 +74,7 @@ class TicTacToe < ActiveRecord::Base
 		turn = figure_turn+1
 		puts "turn: #{turn}"
 		best = game[turn][:move]
-		#self.turns_taken += best.to_s
+		self.turns_taken += best.to_s
 		puts "FINAL best: #{best}"
 		board[best] = @comp
 		return best
@@ -279,9 +279,9 @@ class TicTacToe < ActiveRecord::Base
 				end
 
 				taken_moves = []
-				for j in 0...self.turns_taken.length
-					taken_moves << self.turns_taken[j]
-				end
+				#for j in 0...self.turns_taken.length
+				#	taken_moves << self.turns_taken[j]
+				#end
 				for j in 1...game[:current_turn]
 					if game[j]
 						taken_moves << game[j][:move] #use the self.turns_taken one?
