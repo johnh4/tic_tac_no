@@ -61,7 +61,10 @@ class TicTacToesController < ApplicationController
     end
     @game.board = ""
     @game.save
+    @game.board = copy_board(prev_board)
+    @game.winner_check
     if @game.update(board: copy_board(prev_board))
+      #@game.winner_check
       respond_to do |format|
         format.html { render json: @game }
         format.json { render json: @game }
