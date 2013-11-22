@@ -57,6 +57,7 @@ $(function(){
 			var attributes = this.model.toJSON().tic_tac_toe;
 			console.log("attributes in view render",attributes);
 			this.$el.html(this.template(attributes));
+			//this.showHow();
 			this.checkForWinner();
 			this.paintBoard(boardStr);
 

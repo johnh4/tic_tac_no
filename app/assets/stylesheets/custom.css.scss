@@ -190,6 +190,12 @@ header{
 	//height: 100%;
 	h1 {
 		text-align: center;
+		font-family: "Josefin Sans","Josefin Sans", "Arial";
+		font-weight: 100;
+	}
+	p {
+		font-family: "Open Sans", "Josefin Sans", "Arial";
+		font-weight: 100;
 	}
 	#game-over-el {
 		padding: 10px 15px 10px 15px;
@@ -197,7 +203,17 @@ header{
 		//height: 100%;
 		//float: right;
 		//background: purple;
+		#the-winner h2 {
+			font-size: 150px;
+			text-align: center;
+			font-family: "Josefin Sans","Josefin Sans", "Arial";
+			font-weight: 100;
+		}
 	}
 	#how-el {
+		padding: 0px 15px 10px 15px;
+		p {
+			font-size: 14px;
+		}
 	}
 }
