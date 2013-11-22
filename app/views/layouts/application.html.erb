@@ -17,9 +17,14 @@
 		 board: <%%= board %><br>
 		 player_first: <%%= player_first %><br>
 		 turns_taken: <%%= turns_taken %><br>
-		 <%= link_to "new game", new_tic_tac_to_path, id: "new-game" %><br>
-		 <a href="/#tic_tac_toes/new">Start a New Game</a><br>
-		 <div id="new">the new div</div>
+		 <div id="new" class="selection">FIRST:</div>
+		 <div id="sel-cont">
+			 <div id="player-first" class="selection <%%= player_first == true ? 'first' : 'nope' %>">YOU FIRST</div>
+			 <div id="comp-first" class="selection <%%= player_first == false ? 'first' : 'nope' %>">COMP FIRST</div>
+		 </div>
+		 <div id="start">START ANEW</div>
+		 <div id="set-player-first"><%%= player_first %></div>
+
 		 <div id="board-value"><%%= board %></div>
 		 <div id="js-board"></div>
 		<div id="board">

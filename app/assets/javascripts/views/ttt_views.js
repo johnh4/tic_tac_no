@@ -14,12 +14,25 @@ $(function(){
 			"click #grid-7": "gridSeven",
 			"click #grid-8": "gridEight",
 			"click #grid-9": "gridNine",
-			"click #new"   : "restart"
+			"click #start"   : "restart",
+			"click #player-first" : "setPlayerFirst",
+			"click #comp-first" : "setCompFirst"
 		},
 
 		restart: function(){
 			console.log('in restart');
-			this.nextGame = new TicTacToe({board: "000000002", turns_taken: "8", player_first: false});
+			var playerFirst = $('#set-player-first').html();
+			console.log("playerFirst", playerFirst);
+			var myBoard = "000000000";
+			var turnsTaken = "";
+			if(playerFirst == "false"){
+				playerFirst = false;
+				myBoard = "000000002";
+				turnsTaken = "8";
+			} else if(playerFirst == "true"){
+				playerFirst = true;
+			}
+			this.nextGame = new TicTacToe({board: myBoard, turns_taken: turnsTaken, player_first: playerFirst});
 			this.nextView = new TicTacToeView({ model: this.nextGame });
 			this.nextView.render();
 			$('#app').html(this.nextView.el);
@@ -42,7 +55,6 @@ $(function(){
 			console.log("attributes in view render",attributes);
 			this.$el.html(this.template(attributes));
 
-			this.printBoard(boardStr);
 			this.paintBoard(boardStr);
 
 			return this;
@@ -69,11 +81,23 @@ $(function(){
 			return promise;
 		},
 
+		setPlayerFirst: function(){
+			console.log('in setPlayerFirst');
+			$('#set-player-first').html(true);
+			$('#player-first').addClass('first');
+			$('#comp-first').removeClass('first');
+		},
+
+		setCompFirst: function(){
+			console.log('in setCompFirst');
+			$('#set-player-first').html("false");
+			$('#comp-first').addClass('first');
+			$('#player-first').removeClass('first');
+		},
+
 		gridOne: function(){
-			this.makeMove(0);
-			
+			this.makeMove(0);			
 			console.log('id', $(this).prop('id'));
-			console.log('gridOne clicked, moving at 0');
 		},
 
 		gridTwo: function(){
@@ -108,25 +132,17 @@ $(function(){
 			this.makeMove(8);
 			console.log('id', $(this).prop('id'));
 		},
-		printBoard: function(board){
-			console.log('board', board);
-			console.log('board length', board.length);
-		},
 
 		paintBoard: function(board){
-			//board="000120001";
-			this.printBoard(board);
 			this.addJSBoard(board);
 			var gridIndex;
 			for(i=0; i<board.length; i++){
 				gridIndex = i + 1;
 				if(board[i] == 1){
 					$('#grid-'+gridIndex).addClass('player-move');
-					console.log('player-move at ' + i);
 				}
 				if(board[i] == 2){
 					$('#grid-'+gridIndex).addClass('comp-move');
-					console.log('comp-move at ' + i);
 				}
 			}
 		},

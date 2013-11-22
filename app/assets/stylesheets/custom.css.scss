@@ -25,6 +25,7 @@ $light-blue: #0095FF;
 	}
 	&:not(.comp-move):hover{
 		background: $light-green;
+		cursor: pointer;
 	}
 }
 
@@ -41,4 +42,68 @@ $light-blue: #0095FF;
 	width: 100px;
 	height: 20px;
 	background: red;
+}
+.selection {
+	background: #eaeaea;
+	color: white;
+	border: 1px solid black;
+	width: 150px;
+	float: left;
+	text-align: center;
+	transition: all .3s;
+	-webkit-transition: all .3s;
+	-moz-transition: all .3s;
+	-o-transition: all .3s;
+}
+#new {
+	background: $light-blue;
+	padding: 10px;
+	display: none;
+}
+
+/*
+#sel-cont {
+	&:hover div {
+		background: #eaeaea;
+	}
+	&:hover #player-first:hover {
+		background: $light-green;
+	}
+	&:hover #comp-first:hover {
+		background: $light-red;
+	}
+}
+//*/
+#player-first {
+	padding: 10px 0px;
+	&:hover {
+		background: $light-green;
+	}
+}
+
+#comp-first {
+	padding: 10px 0px;
+	display: inline-block;
+	float: none;
+	&:hover {
+		background: $light-red;
+	}
+}
+.first {
+	background: $light-green;
+	color: white;
+	&:not(#player-first){
+		background: $light-red;
+	}
+}
+
+#start {
+	width: 300px;
+	background: $light-blue;
+	text-align: center;
+	color: white;
+	padding: 10px;
+	border: 1px solid black;
+	border-top: none;
+	cursor: pointer;
 }
