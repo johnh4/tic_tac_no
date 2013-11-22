@@ -76,7 +76,7 @@ class TicTacToesController < ApplicationController
   private
 
   	def tic_tac_toe_params
-  		params.require(:tic_tac_toe).permit(:board, :player_first, :id, :move)
+  		params.require(:tic_tac_toe).permit(:board, :player_first, :id, :move, :turns_taken)
   	end
 
 end

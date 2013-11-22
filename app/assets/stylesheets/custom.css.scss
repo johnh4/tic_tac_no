@@ -16,8 +16,15 @@ $light-blue: #0095FF;
 	height: 100px;
 	width: 100px;
 	float: left;
+	transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s;
+	-o-transition: all 0.5s;
 	&:nth-child(3n+1){
 		clear: left;
+	}
+	&:not(.comp-move):hover{
+		background: $light-green;
 	}
 }
 

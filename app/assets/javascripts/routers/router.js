@@ -3,8 +3,9 @@ $(function(){
 
 		routes: {
 			"" : "home",
-			"tic_tac_toes/:id" : "show",
-			"tic_tac_toes/:id/:move" : "userMove"
+			//"tic_tac_toes/:id" : "show",
+			"tic_tac_toes/:id/:move" : "userMove",
+			"tic_tac_toes/new" : "newGame"
 		},
 
 		initialize: function(){
@@ -12,18 +13,6 @@ $(function(){
 			this.firstGame = new TicTacToe();
 			this.ticTacToeView = new TicTacToeView({ model: this.firstGame });
 			this.ticTacToeView.render();
-			
-			//var self = this;
-			//this.ticTacToes.fetch({
-		    //    success: function(coll, resp) {
-		    //      console.log("coll",coll);
-		    //      console.log("coll.first()",coll.first());
-		    //      console.log("coll.last()", coll.last());
-		    //      console.log("this.ticTacToes.at(1)", self.ticTacToes.at(1));
-		    //      self.firstGame = self.ticTacToes.get(1);
-		    //      console.log("self.firstGame",self.firstGame);
-		    //    }
-			//});
 			
 			console.log('router initialized');
 		},
@@ -41,6 +30,14 @@ $(function(){
 			this.ticTacToe = this.ticTacToes.get(id)
 			this.ticTacToeView = new TicTacToeView({ model: this.ticTacToe });
 			$('#app').html(this.ticTacToeView.el);
+		},
+
+		newGame: function(){
+			console.log('in newGame');
+			this.nextGame = new TicTacToe();
+			this.nextView = new TicTacToeView({ model: this.nextGame });
+			this.nextView.render();
+			$('#app').html(this.nextView.el);
 		},
 
 		userMove: function(id, move){

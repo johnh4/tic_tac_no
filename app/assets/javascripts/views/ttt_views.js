@@ -5,8 +5,6 @@ $(function(){
 		className: "tic-tac-toe",
 		
 		events: {
-			//"click .grid-space" : "chooseGrid",
-			"click .click-test": "chooseGrid",
 			"click #grid-1": "gridOne",
 			"click #grid-2": "gridTwo",
 			"click #grid-3": "gridThree",
@@ -16,7 +14,15 @@ $(function(){
 			"click #grid-7": "gridSeven",
 			"click #grid-8": "gridEight",
 			"click #grid-9": "gridNine",
-			"mouseover .grid-space": "hoverGrid"
+			"click #new"   : "restart"
+		},
+
+		restart: function(){
+			console.log('in restart');
+			this.nextGame = new TicTacToe({board: "000000002", turns_taken: "8", player_first: false});
+			this.nextView = new TicTacToeView({ model: this.nextGame });
+			this.nextView.render();
+			$('#app').html(this.nextView.el);
 		},
 
 		initialize: function(){
@@ -47,22 +53,6 @@ $(function(){
 			console.log('turns_taken', this.model.get('turns_taken'));
 			this.render();
 		},
-
-		hoverGrid: function(){
-			console.log('hover');
-			$(this).css('background', 'red');
-		},
-
-		findGrid: function(){
-			console.log('idtest');
-		},
-
-
-		chooseGrid: function(){
-			alert($(this).prop('id'));
-			console.log('id',this.model.get('id'));
-		},
-
 
 		makeMove: function(move){
 			var gameID = this.model.get('id');

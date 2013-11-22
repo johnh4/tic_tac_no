@@ -38,13 +38,15 @@ class TicTacToe < ActiveRecord::Base
 
 	def user_move(move)
 		@game_over = false
-		if player_first
-			@player = "1"
-			@comp = "2"
-		else
-			@comp = "1"
-			@player = "2"
-		end
+		#if player_first
+		#	@player = "1"
+		#	@comp = "2"
+		#else
+		#	@comp = "1"
+		#	@player = "2"
+		#end
+		@player = "1"
+		@comp = "2"
 
 		#game[:current_turn] += 1
 		#new_board = board.dup
