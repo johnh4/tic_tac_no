@@ -15,7 +15,10 @@ class TicTacToesController < ApplicationController
   	@game = TicTacToe.new(tic_tac_toe_params)
   	if @game.save
   		flash[:success] = "Game started!"
-  		redirect_to @game
+  		respond_to do |format|
+        format.html { render json: @game }
+        format.json { render json: @game }
+      end
   	else
   		redirect_to root_path
   	end
