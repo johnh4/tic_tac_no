@@ -1,7 +1,14 @@
 class TicTacToesController < ApplicationController
   include TicTacToesHelper
+  #respond_to :json
+
   def new
   	@game = TicTacToe.new
+  end
+
+  def index
+    @games = TicTacToe.all
+    render json: @games
   end
 
   def create
@@ -16,6 +23,11 @@ class TicTacToesController < ApplicationController
 
   def show
   	@game = TicTacToe.find(params[:id])
+    respond_to do |format|
+      format.html { render json: @game }
+      format.json { render json: @game }
+    end
+    #respond_with @game
   end
 
   def update
@@ -46,7 +58,11 @@ class TicTacToesController < ApplicationController
     @game.board = ""
     @game.save
     if @game.update(board: copy_board(prev_board))
-      redirect_to @game
+      respond_to do |format|
+        format.html { render json: @game }
+        format.json { render json: @game }
+      end
+      #redirect_to @game
       #render json: @game
     else
       redirect_to root_path
