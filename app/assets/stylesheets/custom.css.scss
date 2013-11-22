@@ -46,8 +46,8 @@ $light-blue: #0095FF;
 	background: $light-red;
 }
 /************ TEST BOARD ************/
-body, html, .container {
-	height: -webkit-calc(100% - 25px);
+body, html, .container, #app {
+	height: -webkit-calc(100% - 16.5px);
 	//height: 100%;
 	width: 100%;
 
@@ -75,6 +75,7 @@ body, html, .container {
 		//display: block;
 		width: 40%;
 		float: right;
+		//overflow: hidden;
 		.selection {
 			width: 50%;
 			border-left: none;
@@ -179,10 +180,24 @@ header{
 #sel-cont {
 	//display: block;
 	//float: right;
-	margin-bottom: 50px;
+	//margin-bottom: 50px;
 }
 
 /********** GAME OVER **************/
-#game-over-el {
-	float: right;
+#game-over-slot{ 
+	display: inline-block;
+	width: 40%;
+	//height: 100%;
+	h1 {
+		text-align: center;
+	}
+	#game-over-el {
+		padding: 10px 15px 10px 15px;
+		//width: 100%;
+		//height: 100%;
+		//float: right;
+		//background: purple;
+	}
+	#how-el {
+	}
 }

@@ -8,13 +8,19 @@
 </head>
 <body>
 
-	<%= render 'layouts/header' %>
+		<div id="app"></div>
 		<%= yield %>
 	<div class="container">
-		<div id="app"></div>
 	</div>
 	<script type="text/template" id="tic-tac-toe-template">
-		 <h1 id="title">Tic Tac No</h1>
+		<header class="navbar navbar-inverse bs-docs-nav" role="banner">
+			<ul class="nav navbar-nav">
+				<li><%= link_to "how it works", "#", id: "how-link" %></li>
+				<li><%= link_to "github", "http://www.github.com/johnh4/tic_tac_no", 
+								target: "_blank" %></li>
+			</ul>
+		</header>
+
 		 <div class="stats">
 			 board: <%%= board %><br>
 			 player_first: <%%= player_first %><br>
@@ -23,14 +29,8 @@
 			 <div id="js-board"></div>
 			 <div id="set-player-first"><%%= player_first %></div>
 		 </div>
-		 <div id="game-over-slot"></div>
-		 <div id="sel-cont">
-			 <div id="player-first" class="selection <%%= player_first == true ? 'first' : 'nope' %>">YOU FIRST</div>
-			 <div id="comp-first" class="selection <%%= player_first == false ? 'first' : 'nope' %>">COMP FIRST</div>
-			 <div id="start">START ANEW</div>
-		 </div>
 
-		<div id="board">
+		<div id="test-board">
 			<div id="grid-1" class="grid-space"></div>
 			<div id="grid-2" class="grid-space"></div>
 			<div id="grid-3" class="grid-space"></div>
@@ -41,6 +41,12 @@
 			<div id="grid-8" class="grid-space"></div>
 			<div id="grid-9" class="grid-space"></div>
 		</div>
+		 <div id="sel-cont">
+			 <div id="player-first" class="selection <%%= player_first == true ? 'first' : 'nope' %>">YOU FIRST</div>
+			 <div id="comp-first" class="selection <%%= player_first == false ? 'first' : 'nope' %>">COMP FIRST</div>
+			 <div id="start">START ANEW</div>
+		 </div>
+		 <div id="game-over-slot"></div>
 	</script>
 	<script type="text/template" id="game-over-template">
 		game over el
@@ -48,6 +54,21 @@
 		<div>You 
 			<%%= winner == "2" ? 'LOSE' : 'WIN' %>
 		</div>	
+	</script>
+	<script type="text/template" id="how-template">
+		<h1>How it Works</h1>
+		<p>
+			Hi! Welcome to Tic Tac No. Here's how it works. 
+		</p>
+		<p>
+			Structure: I used Rails on the back end, which acts as an api for Backbone on the front end.
+		</p>
+		<p>
+			Logic: I built the game as a Rails model, which handles the logic. When the code is looking for the next best move, it uses a trial and error approach that covers all relevant cases.
+
+			It gets the user's move, then tests each of the blank spaces for its next move. For each open space, it runs through the user's possible responses. For each of these possible responses, it makes it's next decision. If it loses one of these trial games, it goes back to the previous decision it made, undoes it makes sure not to do it again.
+			For example, if it's currently the 4th turn, it'll choose an open space. It'll then treat this as the new board, and run through the user's options on turn 5. For each of the user's options, it will choose it's own turn 6 response. For each of these, it'll look at the user's possible moves on turn 7. If one of these moves wins the game for the player, it'll go back to turn 6, make a different move, and take note to not make that move on that board again. If all turn 6 options get banned in this way, it'll go back to turn 4 and try another move. 
+		</p>
 	</script>
 </body>
 </html>

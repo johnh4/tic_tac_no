@@ -1,7 +1,7 @@
 $(function(){
 	window.TicTacToeView = Backbone.View.extend({
 		
-		//id: "game",
+		id: "test-el",
 		className: "tic-tac-toe",
 		
 		events: {
@@ -16,7 +16,8 @@ $(function(){
 			"click #grid-9": "gridNine",
 			"click #start" : "restart",
 			"click #player-first" : "setPlayerFirst",
-			"click #comp-first" : "setCompFirst"
+			"click #comp-first" : "setCompFirst",
+			"click a#how-link": "showHow"
 		},
 
 		restart: function(){
@@ -46,6 +47,7 @@ $(function(){
 			this.model.on('change', this.render, this);
 			//this.model.on('click', this.render, this);
 			//this.model.on('change', this.checkForWinner, this);
+			//$('#how-link').on('click', 'a', this.showHow);
 		},
 
 		template: _.template($("#tic-tac-toe-template").html()),
@@ -103,6 +105,14 @@ $(function(){
 					console.log('cats game.');
 				}
 			}
+		},
+
+		showHow: function(e){
+			console.log('in showHow');
+			e.preventDefault();
+			var how = new How();
+			how.render();
+			$('#game-over-slot').html(how.el);
 		},
 
 		setPlayerFirst: function(){
