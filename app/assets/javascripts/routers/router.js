@@ -27,6 +27,7 @@ $(function(){
 		},
 
 		show: function(id){
+			console.log('in show action function');
 			this.ticTacToe = this.ticTacToes.get(id)
 			this.ticTacToeView = new TicTacToeView({ model: this.ticTacToe });
 			$('#app').html(this.ticTacToeView.el);

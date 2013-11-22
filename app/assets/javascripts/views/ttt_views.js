@@ -40,11 +40,12 @@ $(function(){
 
 		initialize: function(){
 			this.model.save();
-			this.model.on('sync', this.setID, this);
+			this.model.on('sync', this.render, this);
 			//console.log('id',this.model.get('id'));
 			//this.model.sync();
 			this.model.on('change', this.render, this);
-			this.model.on('click', this.render, this);
+			//this.model.on('click', this.render, this);
+			//this.model.on('change', this.checkForWinner, this);
 		},
 
 		template: _.template($("#tic-tac-toe-template").html()),
@@ -54,7 +55,7 @@ $(function(){
 			var attributes = this.model.toJSON().tic_tac_toe;
 			console.log("attributes in view render",attributes);
 			this.$el.html(this.template(attributes));
-
+			this.checkForWinner();
 			this.paintBoard(boardStr);
 
 			return this;
@@ -79,6 +80,29 @@ $(function(){
 				self.model.fetch();
 			});
 			return promise;
+		},
+
+		checkForWinner: function(){
+			var winner = this.model.get("winner");
+			console.log("winner", winner);
+			if(winner != "3"){
+				var gameOver = new GameOver({ model: this.model });
+				gameOver.render();
+				$('#game-over-slot').html(gameOver.el);
+			}
+			if(winner == "2"){
+
+			}
+			else if (winner == "1"){
+
+			}
+			else if (winner == "0"){
+				var board = this.model.get("board");
+				if(board.indexOf('0') == -1){
+					//cats game
+					console.log('cats game.');
+				}
+			}
 		},
 
 		setPlayerFirst: function(){

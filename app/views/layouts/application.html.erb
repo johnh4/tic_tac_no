@@ -8,25 +8,28 @@
 </head>
 <body>
 
+	<%= render 'layouts/header' %>
+		<%= yield %>
 	<div class="container">
 		<div id="app"></div>
-		<%= yield %>
 	</div>
 	<script type="text/template" id="tic-tac-toe-template">
-		 <h1>From Template</h1>	
-		 board: <%%= board %><br>
-		 player_first: <%%= player_first %><br>
-		 turns_taken: <%%= turns_taken %><br>
-		 <div id="new" class="selection">FIRST:</div>
+		 <h1 id="title">Tic Tac No</h1>
+		 <div class="stats">
+			 board: <%%= board %><br>
+			 player_first: <%%= player_first %><br>
+			 turns_taken: <%%= turns_taken %><br>
+			 <div id="board-value"><%%= board %></div>
+			 <div id="js-board"></div>
+			 <div id="set-player-first"><%%= player_first %></div>
+		 </div>
+		 <div id="game-over-slot"></div>
 		 <div id="sel-cont">
 			 <div id="player-first" class="selection <%%= player_first == true ? 'first' : 'nope' %>">YOU FIRST</div>
 			 <div id="comp-first" class="selection <%%= player_first == false ? 'first' : 'nope' %>">COMP FIRST</div>
+			 <div id="start">START ANEW</div>
 		 </div>
-		 <div id="start">START ANEW</div>
-		 <div id="set-player-first"><%%= player_first %></div>
 
-		 <div id="board-value"><%%= board %></div>
-		 <div id="js-board"></div>
 		<div id="board">
 			<div id="grid-1" class="grid-space"></div>
 			<div id="grid-2" class="grid-space"></div>
@@ -38,6 +41,13 @@
 			<div id="grid-8" class="grid-space"></div>
 			<div id="grid-9" class="grid-space"></div>
 		</div>
+	</script>
+	<script type="text/template" id="game-over-template">
+		game over el
+		<h1>GAME OVER</h1>
+		<div>You 
+			<%%= winner == "2" ? 'LOSE' : 'WIN' %>
+		</div>	
 	</script>
 </body>
 </html>

@@ -9,7 +9,8 @@ $(function(){
 		defaults: {
 			"board": "000000000",
 			"player_first": true,
-			"turns_taken": ""
+			"turns_taken": "",
+			"winner": "0"
 		}
 	});
 });
