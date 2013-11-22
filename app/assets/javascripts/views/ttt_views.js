@@ -14,7 +14,7 @@ $(function(){
 			"click #grid-7": "gridSeven",
 			"click #grid-8": "gridEight",
 			"click #grid-9": "gridNine",
-			"click #start"   : "restart",
+			"click #start" : "restart",
 			"click #player-first" : "setPlayerFirst",
 			"click #comp-first" : "setCompFirst"
 		},

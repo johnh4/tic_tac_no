@@ -25,7 +25,9 @@ $light-blue: #0095FF;
 	}
 	&:not(.comp-move):hover{
 		background: $light-green;
-		cursor: pointer;
+	}
+	&:not(.player-move):hover:not(.comp-move):hover{
+		cursor:pointer;
 	}
 }
 
@@ -61,19 +63,6 @@ $light-blue: #0095FF;
 	display: none;
 }
 
-/*
-#sel-cont {
-	&:hover div {
-		background: #eaeaea;
-	}
-	&:hover #player-first:hover {
-		background: $light-green;
-	}
-	&:hover #comp-first:hover {
-		background: $light-red;
-	}
-}
-//*/
 #player-first {
 	padding: 10px 0px;
 	&:hover {

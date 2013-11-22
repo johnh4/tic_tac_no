@@ -499,6 +499,13 @@ class TicTacToe < ActiveRecord::Base
 		return empty_locs
 	end
 
+	def check_for_winner(side)
+		if  board_has_winning_row(self.board, side) || board_has_winning_col(self.board, side) ||
+			board_has_winning_diag(self.board, side)
+			puts "winner found for player #{side}, in self.board #{self.board}"
+		end
+	end
+
 	def board_has_winning_row(trial_board, side)
 		has_winning_row = false
 		if  ([side,trial_board[0],trial_board[1],trial_board[2]].uniq.length == 1) ||

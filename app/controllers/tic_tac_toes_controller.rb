@@ -50,11 +50,12 @@ class TicTacToesController < ApplicationController
     move = params[:move].to_i
     if @game.board[move] == "0"
       prev_board[move] = "1"
-      if empty_count(@game.board) > 2 #@game.board.include?("0")
+      if empty_count(@game.board) >= 2 #@game.board.include?("0")
         @comp_move = @game.user_move(move)
         prev_board[@comp_move] = "2"
       else
         #game over condition
+        puts "game over condition reached."
         @game_over = true
       end
     end
