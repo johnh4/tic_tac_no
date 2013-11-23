@@ -47,8 +47,10 @@
 	<script type="text/template" id="game-over-template">
 		<h1>GAME OVER</h1>
 		<div id="the-winner">
-			<h2>You 
-				<%%= winner == "2" ? 'LOSE' : 'WIN' %>
+			<h2>
+				<%% if(winner == "1") print("YOU WIN") %>
+				<%% if(winner == "2") print("YOU LOSE") %>
+				<%% if(winner == "3") print("CAT'S GAME") %>
 			</h2>
 		</div>	
 	</script>

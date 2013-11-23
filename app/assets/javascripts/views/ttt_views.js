@@ -57,7 +57,7 @@ $(function(){
 			var attributes = this.model.toJSON().tic_tac_toe;
 			console.log("attributes in view render",attributes);
 			this.$el.html(this.template(attributes));
-			//this.showHow();
+			this.showHow();
 			this.checkForWinner();
 			this.paintBoard(boardStr);
 
@@ -88,29 +88,31 @@ $(function(){
 		checkForWinner: function(){
 			var winner = this.model.get("winner");
 			console.log("winner", winner);
-			if(winner != "3"){
+			if(winner != "0"){
 				var gameOver = new GameOver({ model: this.model });
 				gameOver.render();
 				$('#game-over-slot').html(gameOver.el);
+				this.turnTilesOff();
 			}
-			if(winner == "2"){
+		},
 
-			}
-			else if (winner == "1"){
-
-			}
-			else if (winner == "0"){
-				var board = this.model.get("board");
-				if(board.indexOf('0') == -1){
-					//cats game
-					console.log('cats game.');
+		turnTilesOff: function(){
+			this.undelegateEvents();
+			this.delegateEvents(
+				{
+					"click #start" : "restart",
+					"click #player-first" : "setPlayerFirst",
+					"click #comp-first" : "setCompFirst",
+					"click a#how-link": "showHow"
 				}
-			}
+			);
 		},
 
 		showHow: function(e){
 			console.log('in showHow');
-			e.preventDefault();
+			if(e){
+				e.preventDefault();
+			}
 			var how = new How();
 			how.render();
 			$('#game-over-slot').html(how.el);

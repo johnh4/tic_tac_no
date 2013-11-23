@@ -543,6 +543,9 @@ class TicTacToe < ActiveRecord::Base
 	def winner_check
 		self.winner = @player if search_for_winner(@player)
 		self.winner = @comp if search_for_winner(@comp)
+		if self.winner == "0" && !self.board.include?("0")
+			self.winner = "3" #cat's game
+		end
 		puts "self.board: #{self.board}"
 		puts "self.winner: #{self.winner}"
 		return self.winner
