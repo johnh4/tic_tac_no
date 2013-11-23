@@ -119,12 +119,15 @@ header{
 		float: right;
 		text-align: center;
 			li {
-			a {
-				float: right;
-				&:visited {
-					color: white;
+				a {
+					float: right;
+					&:visited {
+						color: white;
+					}
 				}
 			}
+		p.navbar-text {
+			color: white
 		}
 	}
 }
