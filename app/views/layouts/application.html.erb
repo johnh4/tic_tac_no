@@ -5,6 +5,7 @@
   <%= stylesheet_link_tag "application", 
         'https://fonts.googleapis.com/css?family=Josefin+Sans:100,300,400,300italic', 'https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,300', 
         :media => "all" %>
+        <link href='http://fonts.googleapis.com/css?family=Permanent+Marker' rel='stylesheet' type='text/css'>
   <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
   <%= csrf_meta_tags %>
 </head>
@@ -44,7 +45,7 @@
 		 <div id="game-over-slot"></div>
 	</script>
 	<script type="text/template" id="game-over-template">
-		<h1>GAME OVER</h1>
+		<h1 id="over-hl">GAME OVER</h1>
 		<div id="the-winner">
 			<h2>
 				<%% if(winner == "1") print("YOU WIN") %>
@@ -63,8 +64,11 @@
 		</p>
 		<p>
 			Logic: I built the game as a Rails model, which handles the logic. When the code is looking for the next best move, it uses a trial and error approach that covers all relevant cases.
-
+		</p>
+		<p>
 			It gets the user's move, then tests each of the blank spaces for its own next move. For each of these open spaces, it runs through the user's possible responses. Then, for each of these possible responses, it makes it's next move decision. If it loses one of these trial games, it goes back to the previous decision it made, undoes it, and makes sure to not do it again.
+		</p>
+		<p>
 			For example, if it's currently the 4th turn, it'll choose an open space on a trial basis. It'll then treat this as the new board, and run through the user's options on turn 5. For each of the user's options, it will choose it's own turn 6 response. For each of these, it'll look at the user's possible moves on turn 7. If one of these moves wins the game for the player, it'll go back to turn 6, make a different move, and take note to not make that move on that board again. If all turn 6 options get banned in this way, it'll go back to turn 4 and try another move. 
 		</p>
 	</script>

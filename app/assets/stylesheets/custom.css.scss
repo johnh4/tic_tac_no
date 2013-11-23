@@ -21,6 +21,7 @@ $light-blue: #0095FF;
 	-webkit-transition: all 0.5s;
 	-moz-transition: all 0.5s;
 	-o-transition: all 0.5s;
+	transition: all 0.5s;
 	&:nth-child(3n+1){
 		clear: left;
 	}
@@ -42,6 +43,9 @@ $light-blue: #0095FF;
 /************ WINDOW SIZING ************/
 body, html, .container, #app {
 	height: -webkit-calc(100% - 16.5px);
+	height: -moz-calc(100% - 16.5px);
+	height: -o-calc(100% - 16.5px);
+	height: calc(100% - 16.5px);
 	width: 100%;
 
 }
@@ -86,7 +90,10 @@ body, html, .container, #app {
 /************* NAVBAR ***************/
 .navbar, .navbar-default, .navbar-header, .navbar-inverse {
     border-radius: 0px !important;
-    -webkit-border-radius: 0; -moz-border-radius: 0; border-radius: 0;
+    -webkit-border-radius: 0; 
+    -moz-border-radius: 0; 
+    -o-border-radius: 0; 
+    border-radius: 0;    
     background: blue;
     margin: 0px;
     text-align: center;
@@ -96,17 +103,25 @@ body, html, .container, #app {
 		float: right;
 		text-align: center;
 			li {
-				a {
+				a, a:visited, a:link, a:active {
+					color: white;
 					float: right;
-					&:visited {
-						color: white;
-					}
+				}
+				#github:hover, #how-link:hover {
+					color: $light-green;
 				}
 			}
 		p.navbar-text {
 			color: white
 		}
 	}
+}
+#byline {
+	font-family:  "Permanent Marker", "Josefin Sans","Josefin Sans", "Arial";
+	margin-left: 5px;
+}
+#app-title {
+	//font-size: 1.3em;
 }
 /************ FIRST MOVER ***********/
 .selection {
@@ -170,9 +185,11 @@ body, html, .container, #app {
 #game-over-slot{ 
 	display: inline-block;
 	width: 40%;
-	height: 85%;
+	height: 86%;
 	overflow: scroll;
 	margin-top: 83px;
+	background: url('old_mathematics_@2X.png') repeat;
+	background: url('crumpled-white_00247448.jpg') repeat;
 	h1 {
 		text-align: center;
 		font-family:  "Josefin Sans", "Arial";
@@ -180,22 +197,30 @@ body, html, .container, #app {
 		font-variant: small-caps;
 	}
 	p {
-		font-family: "Open Sans", "Josefin Sans", "Arial";
+		font-family: "Permanent Marker", "Open Sans", "Josefin Sans", "Arial";
 		font-weight: 400;
 	}
 	#game-over-el {
 		padding: 10px 15px 10px 15px;
 		#the-winner h2 {
-			font-size: 140px;
+			font-size: 130px;
 			text-align: center;
-			font-family: "Josefin Sans","Josefin Sans", "Arial";
+			font-family:  "Permanent Marker", "Josefin Sans","Josefin Sans", "Arial";
 			font-weight: 400;
+			color: blue;
+		}
+		#over-hl {
+			color: $light-red;
 		}
 	}
 	#how-el {
 		padding: 0px 15px 10px 15px;
+		h1 {
+			font-family:  "Permanent Marker", "Josefin Sans","Josefin Sans", "Arial";
+			color: blue;
+		}
 		p {
-			font-size: 14px;
+			font-size: 15px;
 		}
 	}
 }
