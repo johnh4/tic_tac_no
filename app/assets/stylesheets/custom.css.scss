@@ -9,11 +9,6 @@ $light-blue: #0095FF;
 	width: 300px;
 	background: white;
 	float: left;
-	//margin: 0px auto;
-}
-
-.tic-tac-toe {
-	//margin: 0px auto;
 }
 
 .grid-space {
@@ -42,21 +37,19 @@ $light-blue: #0095FF;
 }
 
 .comp-move {
-	//background: red;
 	background: $light-red;
 }
-/************ TEST BOARD ************/
+/************ WINDOW SIZING ************/
 body, html, .container, #app {
 	height: -webkit-calc(100% - 16.5px);
-	//height: 100%;
 	width: 100%;
 
 }
-#test-el {
+#ttt-el {
 	height: 100%;
 	width: 100%;
 	position: relative;
-	#test-board {
+	#board {
 		float: left;
 		background: black;
 		height: 100%;
@@ -64,22 +57,14 @@ body, html, .container, #app {
 		margin-bottom: 50px;
 		.grid-space {
 			border: 1px solid black;
-			//height: -webkit-calc(33%);
-			//height: calc(33%);
-			//width: -webkit-calc(33%);
 			height: 33.27%;
-			width: 33.3333%;
-			//background: white;
-		}
+			width: 33.3333%;		}
 	}
 	#sel-cont {
-		//display: block;
 		position: absolute;
 		left: 60%;
 		width: 41%;
 		float: right;
-		//overflow: hidden;
-		//border-left: 1px solid black;
 		.selection {
 			width: 50%;
 			border-left: none;
@@ -91,9 +76,6 @@ body, html, .container, #app {
 		}
 	}
 }
-#clearer {
-	//clear: right;
-}
 /************ MISC ******************/
 .stats {
 	display: none;
@@ -102,19 +84,14 @@ body, html, .container, #app {
 	padding-top: 60px;
 }
 /************* NAVBAR ***************/
-header{
-	//background: blue;
-}
 .navbar, .navbar-default, .navbar-header, .navbar-inverse {
     border-radius: 0px !important;
     -webkit-border-radius: 0; -moz-border-radius: 0; border-radius: 0;
     background: blue;
     margin: 0px;
-    //padding: 0px;
     text-align: center;
 }
 .navbar {
-    //display: inline-block;
 	ul {
 		float: right;
 		text-align: center;
@@ -187,9 +164,6 @@ header{
 #sel-cont {
 	height: 14%;
 	overflow: hidden;
-	//display: block;
-	//float: right;
-	//margin-bottom: 50px;
 }
 
 /********** GAME OVER **************/
@@ -201,24 +175,21 @@ header{
 	margin-top: 83px;
 	h1 {
 		text-align: center;
-		font-family: "Josefin Sans","Josefin Sans", "Arial";
-		font-weight: 100;
+		font-family:  "Josefin Sans", "Arial";
+		font-weight: 400;
+		font-variant: small-caps;
 	}
 	p {
 		font-family: "Open Sans", "Josefin Sans", "Arial";
-		font-weight: 100;
+		font-weight: 400;
 	}
 	#game-over-el {
 		padding: 10px 15px 10px 15px;
-		//width: 100%;
-		//height: 100%;
-		//float: right;
-		//background: purple;
 		#the-winner h2 {
-			font-size: 150px;
+			font-size: 140px;
 			text-align: center;
 			font-family: "Josefin Sans","Josefin Sans", "Arial";
-			font-weight: 100;
+			font-weight: 400;
 		}
 	}
 	#how-el {

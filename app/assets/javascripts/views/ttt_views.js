@@ -1,7 +1,7 @@
 $(function(){
 	window.TicTacToeView = Backbone.View.extend({
 		
-		id: "test-el",
+		id: "ttt-el",
 		className: "tic-tac-toe",
 		
 		events: {
