@@ -226,6 +226,11 @@ class TicTacToe < ActiveRecord::Base
 			#puts "prev_turns_pre: #{prev_turns_pre}"
 			finished = false
 			puts "setting finished to false"
+
+			#record pre-loop board state
+			pre_game = game.dup
+			loop_game_arr = []
+			moves_arr = []
 			for i in 0...moves.length
 				puts "starting index #{i} of turn #{turn}"
 				puts "finished is #{finished}"
@@ -269,10 +274,10 @@ class TicTacToe < ActiveRecord::Base
 					puts "BLANK TURN. Win condition?"
 					break
 				end
-				puts "game[:current_turn]]: #{game[:current_turn]}"
-				puts "game[game[:current_turn]][:move]: #{game[game[:current_turn]][:move]}"
-				puts "game[game[:current_turn]][:board]: #{game[game[:current_turn]][:board]}"
-				puts "game[game[:current_turn]][:board][moves[i]]: #{game[game[:current_turn]][:board][moves[i]]}"
+				#puts "game[:current_turn]]: #{game[:current_turn]}"
+				#puts "game[game[:current_turn]][:move]: #{game[game[:current_turn]][:move]}"
+				#puts "game[game[:current_turn]][:board]: #{game[game[:current_turn]][:board]}"
+				#puts "game[game[:current_turn]][:board][moves[i]]: #{game[game[:current_turn]][:board][moves[i]]}"
 
 				new_moves = empty_slots(current_board(game))
 				puts "current_board(game): #{current_board(game)}"
@@ -299,9 +304,31 @@ class TicTacToe < ActiveRecord::Base
 				#end
 				if taken_moves.include?(moves[i])
 					puts "ERROR: taken_moves (#{taken_moves}) includes moves[i] (#{moves[i]})"
-					#break
+					puts "pre_moves: #{pre_moves}"
+					puts "moves: #{moves}"
+					puts "pre_game: #{pre_game}"					
+					puts "game: #{game}"
+
+					game_last_i = loop_game_arr[i-1]
+					puts "game_last_i: #{game_last_i}"
+					moves_last_i = moves_arr[i-1]
+					puts "moves_last_i: #{moves_last_i}"
+					moves_0 = moves_arr[0]
+					puts "moves_0: #{moves_0}"
+
+					if player_first == true
+						if game[1][:move] == 5 
+							game[2][:move] = 2
+						elsif game[1][:move] == 7
+							game[2][:move] = 6
+						end
+					end
+					
+
 					@game_over = true
-					#break
+					
+					#moves[i] = moves_last_i[i]
+					#puts "new moves[i]: #{moves[i]}"
 					
 					#puts "@loop_had_loss: #{@loop_had_loss}"
 					#break if @loop_had_loss
@@ -400,6 +427,10 @@ class TicTacToe < ActiveRecord::Base
 					puts "that's game? below"
 					break
 				end
+				i_game = game.dup
+				loop_game_arr[i]= i_game
+				i_move = moves.dup
+				moves_arr[i] = i_move
 				take_turn(game)
 				#game[turn][:board][i] = "0" 
 				#puts "undid move at index #{i} on turn #{turn} from last run of loop. board: #{game[turn][:board][i]}"
