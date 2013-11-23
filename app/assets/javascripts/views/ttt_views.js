@@ -42,12 +42,7 @@ $(function(){
 		initialize: function(){
 			this.model.save();
 			this.model.on('sync', this.render, this);
-			//console.log('id',this.model.get('id'));
-			//this.model.sync();
 			this.model.on('change', this.render, this);
-			//this.model.on('click', this.render, this);
-			//this.model.on('change', this.checkForWinner, this);
-			//$('#how-link').on('click', 'a', this.showHow);
 		},
 
 		template: _.template($("#tic-tac-toe-template").html()),

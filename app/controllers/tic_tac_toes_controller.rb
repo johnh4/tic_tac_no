@@ -1,6 +1,5 @@
 class TicTacToesController < ApplicationController
   include TicTacToesHelper
-  #respond_to :json
 
   def new
   	@game = TicTacToe.new
@@ -30,7 +29,6 @@ class TicTacToesController < ApplicationController
       format.html { render json: @game }
       format.json { render json: @game }
     end
-    #respond_with @game
   end
 
   def update
@@ -50,27 +48,20 @@ class TicTacToesController < ApplicationController
     move = params[:move].to_i
     if @game.board[move] == "0"
       prev_board[move] = "1"
-      if empty_count(@game.board) >= 2 #@game.board.include?("0")
+      if empty_count(@game.board) >= 2
         @comp_move = @game.user_move(move)
         prev_board[@comp_move] = "2"
-      else
-        #game over condition
-        puts "game over condition reached."
-        @game_over = true
       end
     end
     @game.board = ""
-    @game.save
+    @game.save #it wouldn't recognize board changes without a clear and save
     @game.board = copy_board(prev_board)
     @game.winner_check
     if @game.update(board: copy_board(prev_board))
-      #@game.winner_check
       respond_to do |format|
         format.html { render json: @game }
         format.json { render json: @game }
       end
-      #redirect_to @game
-      #render json: @game
     else
       redirect_to root_path
     end
