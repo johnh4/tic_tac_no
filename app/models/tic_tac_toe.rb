@@ -212,6 +212,8 @@ class TicTacToe < ActiveRecord::Base
 							game[2][:move] = 2
 						elsif game[1][:move] == 7
 							game[2][:move] = 6
+						elsif game[1][:move] == 6 || game[1][:move] == 8
+							game[2][:move] = 4
 						end
 					end
 					
